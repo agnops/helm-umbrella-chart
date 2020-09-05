@@ -3,7 +3,7 @@ entries:
   agnops:
   - apiVersion: v1
     appVersion: 1.90.0
-    created: "2020-09-02T23:49:57.177993674+03:00"
+    created: "2020-09-05T18:35:37.540108965Z"
     dependencies:
     - condition: nginx-webpage.enabled
       name: nginx-webpage
@@ -29,7 +29,7 @@ entries:
       repository: ""
       version: 0.1.0
     description: An umbrella chart for agnops CI/CD platform
-    digest: 93ed6a0a33346f45815f2e774dbb6cb0ace313bc0d6c1b7c74dbb5707a2c638f
+    digest: c67f96f48f543597c073ff7dee5555d5d6a6745493c77ea668f7fb1df6f313c0
     home: https://www.agnops.com/
     keywords:
     - cicd
@@ -43,4 +43,4 @@ entries:
     urls:
     - https://charts.agnops.com/agnops-0.1.0.tgz
     version: 0.1.0
-generated: "2020-09-02T23:49:57.175512248+03:00"
+generated: "2020-09-05T18:35:37.537902771Z"

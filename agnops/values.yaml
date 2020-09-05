@@ -1,0 +1,60 @@
+global:
+  scmProvider: "github"
+  cloudName: myCloudAliasName
+  ingress:
+    enabled: true
+    tls: true
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    hosts:
+      - app.agnops.com
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+cloud-wrapper:
+  enabled: true
+  cloudProvider: AWS
+  service:
+    port: 80
+
+oauth2-proxy:
+  enabled: true
+  clientId: ""
+  clientSecret: ""
+  cookieSecret: ""
+  service:
+    port: 4180
+
+job-generator:
+  service:
+    port: 80
+
+notification:
+  enabled: true
+  slack:
+    enabled: true
+    webhookUrl: "https://hooks.slack.com/services/bla/bla/bla"
+
+  # For gmail, you have to enable less secure app access: https://myaccount.google.com/lesssecureapps
+  smtpDetails:
+    enabled: false
+    host: "smtp.gmail.com"
+    port: "587"
+    username: ""
+    password: ""
+
+  mailgun:
+    enabled: false
+    # https://app.mailgun.com/app/account/security/api_keys
+    apiKey: ""
+    # https://app.mailgun.com/app/sending/domains
+    domain: ""
+
+nginx-webpage:
+  enabled: true
+
+webhook-manager:
+  enabled: true

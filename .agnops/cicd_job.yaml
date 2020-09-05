@@ -1,0 +1,21 @@
+workflow:
+  branchFilters:
+    - master
+  trackedFiles:
+    - .agnops/
+    - agnops/
+  containers:
+    - container:
+      name: helm-kubectl
+      image: agnops/helm-kubectl:latest
+      command: |
+        for d in agnops/charts/* ; do helm lint $d; done
+        helm package agnops
+        helm repo index --add-dir-header --url https://charts.agnops.com/ .
+        apk add git
+        git config --global user.name "agnops" && git config --global user.email "admin@agnops.com"
+        git remote set-url origin https://$OAUTH_TOKEN:x-oauth-basic@github.com/agnops/helm-umbrella-chart.git
+        git checkout master
+        git add agnops-0.1.0.tgz index.yaml
+        git commit -am "Update Helm packages with CommitId: $COMMITID"
+        git push

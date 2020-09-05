@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "job-generator.fullname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "job-generator.serviceAccountName" . }}
+  apiGroup: ""
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "job-generator.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io

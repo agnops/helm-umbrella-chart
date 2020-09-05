@@ -1,0 +1,46 @@
+apiVersion: v1
+entries:
+  agnops:
+  - apiVersion: v1
+    appVersion: 1.90.0
+    created: "2020-09-02T23:49:57.177993674+03:00"
+    dependencies:
+    - condition: nginx-webpage.enabled
+      name: nginx-webpage
+      repository: ""
+      version: 0.1.0
+    - condition: cloud-wrapper.enabled
+      name: cloud-wrapper
+      repository: ""
+      version: 0.1.0
+    - condition: oauth2-proxy.enabled
+      name: oauth2-proxy
+      repository: ""
+      version: 0.1.0
+    - condition: webhook-manager.enabled
+      name: webhook-manager
+      repository: ""
+      version: 0.1.0
+    - condition: notification.enabled
+      name: notification
+      repository: ""
+      version: 0.1.0
+    - name: job-generator
+      repository: ""
+      version: 0.1.0
+    description: An umbrella chart for agnops CI/CD platform
+    digest: 93ed6a0a33346f45815f2e774dbb6cb0ace313bc0d6c1b7c74dbb5707a2c638f
+    home: https://www.agnops.com/
+    keywords:
+    - cicd
+    - devops
+    - deployment
+    maintainers:
+    - name: SubX
+    name: agnops
+    sources:
+    - https://github.com/agnops
+    urls:
+    - https://charts.agnops.com/agnops-0.1.0.tgz
+    version: 0.1.0
+generated: "2020-09-02T23:49:57.175512248+03:00"

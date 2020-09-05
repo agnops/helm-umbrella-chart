@@ -1,0 +1,36 @@
+{{- if .Values.global.ingress.enabled -}}
+{{- $fullName := include "job-generator.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "job-generator.labels" . | nindent 4 }}
+  {{- with .Values.global.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.global.ingress.tls }}
+  tls:
+    {{- range .Values.global.ingress.hosts }}
+    - hosts:
+        - {{ . | quote }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.global.ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          - path: /webhooks
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+    {{- end }}
+  {{- end }}

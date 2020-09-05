@@ -1,0 +1,18 @@
+dependencies:
+  - name: nginx-webpage
+    condition: nginx-webpage.enabled
+    version: 0.1.0
+  - name: cloud-wrapper
+    condition: cloud-wrapper.enabled
+    version: 0.1.0
+  - name: oauth2-proxy
+    condition: oauth2-proxy.enabled
+    version: 0.1.0
+  - name: webhook-manager
+    condition: webhook-manager.enabled
+    version: 0.1.0
+  - name: notification
+    condition: notification.enabled
+    version: 0.1.0
+  - name: job-generator
+    version: 0.1.0

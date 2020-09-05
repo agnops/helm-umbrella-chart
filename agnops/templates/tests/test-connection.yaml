@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-agnops-test-connection"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    {{- if index .Values "cloud-wrapper" "enabled" }}
+    - name: cloud-wrapper
+      image: busybox
+      command: ['sh', '-c']
+      args: ['while true; do wget -T 15 -c {{ .Release.Name }}-cloud-wrapper:{{ index .Values "cloud-wrapper" "service" "port" }}/healthcheck && break; done;']
+    {{- end }}
+    - name: job-generator
+      image: busybox
+      command: ['sh', '-c']
+      args: ['while true; do wget -T 15 -c {{ .Release.Name }}-job-generator:{{ index .Values "job-generator" "service" "port" }}/healthcheck && break; done;']
+    - name: oauth2-proxy
+      image: busybox
+      command: ['sh', '-c']
+      args: ['while true; do wget -T 15 -c {{ .Release.Name }}-oauth2-proxy:{{ index .Values "oauth2-proxy" "service" "port" }}/ping && break; done;']
+  restartPolicy: Never

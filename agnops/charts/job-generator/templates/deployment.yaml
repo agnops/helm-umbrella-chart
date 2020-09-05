@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "job-generator.fullname" . }}
+  labels:
+    {{- include "job-generator.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "job-generator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "job-generator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "job-generator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3000
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3000
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: HELM_RELEASE
+              value: {{ .Release.Name }}
+            - name: CLOUD_WRAPPER_HOST_PORT
+              value: "{{ .Release.Name }}-cloud-wrapper:{{ .Values.service.port }}"
+            - name: scmProvider
+              value: {{ .Values.global.scmProvider }}
+            - name: cloudName
+              value: {{ .Values.global.cloudName }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if and (and .Values.global.nodeSelector .Values.global.affinity) .Values.global.tolerations -}}
+      nodeSelector:
+      {{- with .Values.global.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+      {{- with .Values.global.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.global.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- else }}
+      nodeSelector:
+        {{- with .Values.nodeSelector }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      affinity:
+      {{- with .Values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}

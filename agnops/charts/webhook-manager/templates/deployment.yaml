@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webhook-manager.fullname" . }}
+  labels:
+    {{- include "webhook-manager.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "webhook-manager.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "webhook-manager.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webhook-manager.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: HELM_RELEASE
+              value: {{ .Release.Name }}
+            - name: scmProvider
+              value: {{ .Values.global.scmProvider }}
+            - name: sslVerification
+              value: "{{ .Values.global.ingress.tls }}"
+            - name: WEBHOOK_PAYLOAD_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-job-generator
+                  key: WEBHOOK_PAYLOAD_URL
+          envFrom:
+            - secretRef:
+                name: {{ include "webhook-manager.fullname" . }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if and (and .Values.global.nodeSelector .Values.global.affinity) .Values.global.tolerations -}}
+      nodeSelector:
+      {{- with .Values.global.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+      {{- with .Values.global.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.global.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- else }}
+      nodeSelector:
+        {{- with .Values.nodeSelector }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      affinity:
+      {{- with .Values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}

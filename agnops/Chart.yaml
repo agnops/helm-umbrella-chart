@@ -1,0 +1,17 @@
+apiVersion: v1
+name: agnops
+version: 0.1.0
+description: An umbrella chart for agnops CI/CD platform
+keywords:
+    - cicd
+    - devops
+    - deployment
+
+home: https://www.agnops.com/
+sources:
+    - https://github.com/agnops
+
+maintainers:
+  - name: SubX
+  
+appVersion: 1.90.0
